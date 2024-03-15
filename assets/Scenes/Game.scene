@@ -2076,6 +2076,9 @@
         "__id__": 44
       }
     ],
+    "nodeListIconSpin": {
+      "__id__": 19
+    },
     "nodePool": {
       "__id__": 10
     },

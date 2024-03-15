@@ -1,4 +1,4 @@
-import { _decorator, Component, instantiate, Node, Prefab, Sprite } from 'cc';
+import { _decorator, Component, EventKeyboard, Input, input, instantiate, KeyCode, Node, Prefab, Sprite } from 'cc';
 import { Constants } from './Constants';
 import { GameView } from './GameView';
 import { GameModel } from './GameModel';
@@ -20,34 +20,27 @@ export class GameController extends Component {
     private listSpin: Node[] = []
 
     @property({type: Node})
+    private nodeListIconSpin: Node = null
+
+    @property({type: Node})
     private nodePool: Node = null;
 
     private iconPool: Node[] = []
-    
+
+    private isSpin: boolean = false;
+
     protected start(): void {
-        this.createIcons();
+        this.createIconsBorder();
+        input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
     }
 
     protected update(dt: number): void {
-        this.spinIcon(dt);
+        // this.spinIcon(dt);
     }
 
-    private spinIcon(dt: number): void {
-        for(let i = 0; i < this.listSpin.length; i++){
-            const icon = this.listSpin[i]; 
-            var posX = icon.position.x;
-            var posY = icon.position.y;
+    
 
-            if(posY <= -280){
-                posY = 1768;
-            }
-
-            posY -= 250 * dt;
-            icon.setPosition(posX, posY, 0);
-        }
-    }
-
-    private createIcons(): void {
+    private createIconsBorder(): void {
         let startX = -250;
         let startY = 480;
         let iconCount = 0;
@@ -82,6 +75,14 @@ export class GameController extends Component {
             }
 
             iconCount++;
+        }
+    }
+
+    protected onKeyDown (event: EventKeyboard): void {
+        switch(event.keyCode) {
+            case KeyCode.SPACE:
+                console.log('Press a key');
+                break;
         }
     }
 }

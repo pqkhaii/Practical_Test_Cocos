@@ -5,7 +5,12 @@ const { ccclass, property } = _decorator;
 export class GameView extends Component {
     
     @property({type: SpriteFrame})
-    private listEnemy: SpriteFrame[] = []
+    private listIcon: SpriteFrame[] = []
+
+    public get ListIcon() : SpriteFrame[] {
+        return this.listIcon;
+    }
+    
 }
 
 

@@ -24,7 +24,7 @@ export class GameController extends Component {
     private itemBorderPool: Node[] = []
     
     @property({type: Node})
-    private nodeListIconSpin: Node = null
+    private nodeListItemSpin: Node = null
 
     private itemSpinPool: Node[] = []
 
@@ -41,22 +41,21 @@ export class GameController extends Component {
 
     protected start(): void {
         this.createIteamBorder();
-        input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
-
-        
         this.createItemSpinPool();
+        input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
     }
 
     protected update(dt: number): void {
         this.spinItems(dt);
+        // this.updatePosition();
     }
 
     private spinItems(dt: number): void {
         if(this.isSpin === true){
             for(let i = 0; i < this.itemSpinPool.length; i++){
-                const icon = this.itemSpinPool[i];
-                var posX = icon.position.x;
-                var posY = icon.position.y;
+                const item = this.itemSpinPool[i];
+                var posX = item.position.x;
+                var posY = item.position.y;
 
                 posY -= 5000 * dt;
 
@@ -65,11 +64,11 @@ export class GameController extends Component {
                 }
 
                 //result
-                if(this.isCheck === true && icon === this.nodeResult){
+                if(this.isCheck === true && item === this.nodeResult){
                     this.isSpin = false;
 
                     this.itemSpinPool.sort((a, b) => a.position.y - b.position.y);
-                    this.itemSpinPool.map((item, index) => {
+                    this.itemSpinPool.map((item) => {
                         tween(item).to(0.3, { 
                             position: new Vec3(0, item.position.y - this.nodeResult.position.y) 
                         })
@@ -77,9 +76,26 @@ export class GameController extends Component {
                     });
                 }
                 else{
-                    icon.setPosition(posX, posY, 0.0);
+                    this.updatePosition();
+                    item.setPosition(posX, posY, 0.0);
                 }
             }
+        }
+    }
+    
+    private updatePosition(): void {
+        const distanceBetweenItems = 180;
+
+        for (let i = 1; i < this.itemSpinPool.length; i++) {
+            const icon = this.itemSpinPool[i];
+            const prevIcon = this.itemSpinPool[i - 1];
+
+            var posX = icon.position.x;
+            var posY = icon.position.y;
+
+            posY = prevIcon.position.y + distanceBetweenItems;
+        
+            icon.setPosition(posX, posY)
         }
     }
 
@@ -88,10 +104,10 @@ export class GameController extends Component {
         this.shuffleArray(array);
         for (let i = 0; i < 9; i++) {
             const child = new Node();
-            child.parent = this.nodeListIconSpin;
+            child.parent = this.nodeListItemSpin;
             this.itemSpinPool.push(child);
             let itemSpin = child.addComponent(ItemSpin);
-            itemSpin.createItem(this.gameView.ListIcon[array[i]], -590 + i * 200, array[i])
+            itemSpin.createItem(this.gameView.ListItem[array[i]], -590 + i * 200, array[i])
         }
     }
 
@@ -105,40 +121,40 @@ export class GameController extends Component {
     private createIteamBorder(): void {
         let startX = -250;
         let startY = 480;
-        let iconCount = 0;
+        let itemCount = 0;
 
         for(let i = 0; i < 18; i++){
-            const icon = instantiate(this.itemPrefab);
-            this.itemBorderPool.push(icon);
-            icon.parent = this.nodePool;
+            const item = instantiate(this.itemPrefab);
+            this.itemBorderPool.push(item);
+            item.parent = this.nodePool;
 
-            let spriteFrameIndex = iconCount % this.gameView.ListIcon.length;
-            let spriteFrame = this.gameView.ListIcon[spriteFrameIndex];
+            let spriteFrameIndex = itemCount % this.gameView.ListItem.length;
+            let spriteFrame = this.gameView.ListItem[spriteFrameIndex];
 
-            let itemBorder = icon.addComponent(ItemBorder);
+            let itemBorder = item.addComponent(ItemBorder);
             itemBorder.createItem(spriteFrame, i)
 
             if(i <= 3){
-                icon.setPosition(startX + i * 170, startY);
+                item.setPosition(startX + i * 170, startY);
             } 
             else if(i > 3 && i <= 9){
                 let offsetY = 160 * (i - 3);
-                icon.setPosition(this.itemBorderPool[3].position.x, this.itemBorderPool[3].position.y - offsetY);
+                item.setPosition(this.itemBorderPool[3].position.x, this.itemBorderPool[3].position.y - offsetY);
             } 
             else if(i > 9 && i <= 12){
                 let offsetX = 170 * (i - 9);
-                icon.setPosition(this.itemBorderPool[9].position.x - offsetX, this.itemBorderPool[9].position.y);
+                item.setPosition(this.itemBorderPool[9].position.x - offsetX, this.itemBorderPool[9].position.y);
             } 
             else{
                 let offsetY = 160 * (i - 12);
-                icon.setPosition(this.itemBorderPool[12].position.x, this.itemBorderPool[12].position.y + offsetY);
+                item.setPosition(this.itemBorderPool[12].position.x, this.itemBorderPool[12].position.y + offsetY);
             }
 
-            iconCount++;
+            itemCount++;
         }
     }
 
-    public startAnimIconsBorder(type: number): void {
+    public startAnimItemsBorder(type: number): void {
         this.itemBorderPool[this.type].getComponent(Sprite).color = Color.WHITE;
         this.scheduleCallBack = () => {
             this.type++;
@@ -170,7 +186,7 @@ export class GameController extends Component {
             case KeyCode.SPACE:
                 if(this.countSpace === 0){
                     const result = randomRangeInt(0, 9);
-                    this.startAnimIconsBorder(result);
+                    this.startAnimItemsBorder(result);
                     this.startSpin(result);
 
                     this.isCheck = false;

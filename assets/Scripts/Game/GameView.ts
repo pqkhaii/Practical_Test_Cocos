@@ -5,10 +5,10 @@ const { ccclass, property } = _decorator;
 export class GameView extends Component {
     
     @property({type: SpriteFrame})
-    private listIcon: SpriteFrame[] = []
+    private listItem: SpriteFrame[] = []
 
-    public get ListIcon() : SpriteFrame[] {
-        return this.listIcon;
+    public get ListItem() : SpriteFrame[] {
+        return this.listItem;
     }
     
 }

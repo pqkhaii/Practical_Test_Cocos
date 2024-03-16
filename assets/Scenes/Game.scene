@@ -1068,7 +1068,7 @@
     "nodePool": {
       "__id__": 10
     },
-    "nodeListIconSpin": {
+    "nodeListItemSpin": {
       "__id__": 19
     },
     "_id": "b05GhYPjBNorKw5qUNCEpK"
@@ -1082,7 +1082,7 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "listIcon": [
+    "listItem": [
       {
         "__uuid__": "02bae7ba-a74d-46af-a261-cb4607c7c22b@f9941",
         "__expectedType__": "cc.SpriteFrame"

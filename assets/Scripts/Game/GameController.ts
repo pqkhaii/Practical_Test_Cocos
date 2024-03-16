@@ -47,7 +47,6 @@ export class GameController extends Component {
 
     protected update(dt: number): void {
         this.spinItems(dt);
-        // this.updatePosition();
     }
 
     private spinItems(dt: number): void {
@@ -82,11 +81,11 @@ export class GameController extends Component {
             }
         }
     }
-    
-    private updatePosition(): void {
-        const distanceBetweenItems = 180;
 
-        for (let i = 1; i < this.itemSpinPool.length; i++) {
+    private updatePosition(): void {
+        const distanceBetweenItems = 190;
+
+        for(let i = 1; i < this.itemSpinPool.length; i++){
             const icon = this.itemSpinPool[i];
             const prevIcon = this.itemSpinPool[i - 1];
 
@@ -102,12 +101,16 @@ export class GameController extends Component {
     protected createItemSpinPool(): void {
         let array: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
         this.shuffleArray(array);
+
+        let distance = 200;
+        let startPosY = -590;
+
         for (let i = 0; i < 9; i++) {
-            const child = new Node();
-            child.parent = this.nodeListItemSpin;
-            this.itemSpinPool.push(child);
-            let itemSpin = child.addComponent(ItemSpin);
-            itemSpin.createItem(this.gameView.ListItem[array[i]], -590 + i * 200, array[i])
+            const item = new Node();
+            item.parent = this.nodeListItemSpin;
+            this.itemSpinPool.push(item);
+            let itemSpin = item.addComponent(ItemSpin);
+            itemSpin.createItem(this.gameView.ListItem[array[i]], startPosY + i * distance, array[i])
         }
     }
 
@@ -175,7 +178,16 @@ export class GameController extends Component {
     }
 
     public startSpin(type: number): void {
-        this.nodeResult = this.itemSpinPool.find((item) => item.getComponent(ItemSpin).getType() === type);
+        let foundItem = null;
+        for(let i = 0; i < this.itemSpinPool.length; i++){
+            let item = this.itemSpinPool[i];
+            let itemType = item.getComponent(ItemSpin).getType();
+            if(itemType === type){
+                foundItem = item;
+                break;
+            }
+        }
+        this.nodeResult = foundItem;
 
         //check result
         console.log(this.nodeResult.getComponent(Sprite).spriteFrame.name);
@@ -191,6 +203,7 @@ export class GameController extends Component {
 
                     this.isCheck = false;
                     this.isSpin = true;
+
                     input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
                     
                     this.scheduleOnce(() => {
@@ -200,7 +213,9 @@ export class GameController extends Component {
                 }
                 else{
                     this.isCheck = true;
+
                     input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+                    
                     this.scheduleOnce(() => {
                         this.countSpace = 0;
                         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
